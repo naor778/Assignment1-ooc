@@ -8,6 +8,7 @@ public class BouncingBallAnimation {
     private static final String[] DEFAULT_ARGS = {"100", "100", "2", "3"};
 
     public static void main(String[] args) {
+        drawAnimation();
         if (args.length == 0) {
             args = DEFAULT_ARGS;
         }
@@ -50,4 +51,5 @@ public class BouncingBallAnimation {
             sleeper.sleepFor(50);  // wait for 50 milliseconds.
         }
     }
+
 }
