@@ -1,3 +1,5 @@
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class LineTest {
@@ -188,4 +190,96 @@ class LineTest {
         assertTrue(line.inRange(5, 5, 5), "a=b=5 → רק ערך שווה בדיוק אמור להחזיר true");
         assertFalse(line.inRange(5, 5, 4.999), "אם isIn ≠ 5 → false");
     }
+    @Test
+    void overlappingDiagonalLines() {
+        Line a = new Line(0,0, 4,4);
+        Line b = new Line(2,2, 6,6); // חופף חלקית
+        assertTrue(a.isIntersecting(b));
+        assertNotNull(a.intersectionWith(b)); // אצלך מחזיר נקודת חפיפה כלשהי
+    }
+    @Test
+    void parallelDiagonalLinesNoIntersection() {
+        Line a = new Line(0,0, 4,4);   // y=x
+        Line b = new Line(0,1, 4,5);   // y=x+1
+        assertFalse(a.isIntersecting(b));
+        assertNull(a.intersectionWith(b));
+    }
+    @Test
+    void intersectionAtEndpoint() {
+        Line a = new Line(0,0, 4,0);
+        Line b = new Line(4,0, 4,5);
+        assertTrue(a.isIntersecting(b));
+        Point p = a.intersectionWith(b);
+        assertEquals(4.0, p.getX(), 1e-9);
+        assertEquals(0.0, p.getY(), 1e-9);
+    }
+    @Test
+    void zeroLengthLineIntersection() {
+        Line dot = new Line(1,1, 1,1);
+        Line a   = new Line(0,1, 3,1);
+        assertTrue(dot.isIntersecting(a)); // אם נקודה יושבת על הקו
+        assertNotNull(dot.intersectionWith(a));
+    }
+    @Test
+    void closestIntersection_NoIntersection() {
+        Line line = new Line(0, 0, -5, -5);
+        Rectangle rect = new Rectangle(new Point(10, 10), 20, 20);
+
+        assertNull(line.closestIntersectionToStartOfLine(rect),
+                "אין חיתוך — צריך להחזיר null");
+    }
+
+    @Test
+    void closestIntersection_SingleIntersection() {
+        Line line = new Line(0, 0, 20, 20);
+        Rectangle rect = new Rectangle(new Point(10, 10), 10, 10);
+
+        Point p = line.closestIntersectionToStartOfLine(rect);
+
+        assertNotNull(p, "יש חיתוך — אסור להחזיר null");
+        assertEquals(10.0, p.getX(), 1e-9);
+        assertEquals(10.0, p.getY(), 1e-9);
+    }
+
+    @Test
+    void closestIntersection_TwoIntersectionsChooseClosest() {
+        Line line = new Line(0, 0, 30, 10);
+        Rectangle rect = new Rectangle(new Point(10, 0), 10, 10);
+
+        // הצלעות נותנות שתי נקודות חיתוך:
+        // (10, ~3.33) ו (20, ~6.66)
+        Point p = line.closestIntersectionToStartOfLine(rect);
+
+        assertNotNull(p);
+        // בודקים שהוא בחר את הראשונה (הקרובה ל־start)
+        assertEquals(10.0, p.getX(), 1e-9);
+    }
+
+    @Test
+    void closestIntersection_HitAtEdge() {
+        Line line = new Line(0, 0, 10, 0);
+        Rectangle rect = new Rectangle(new Point(10, -5), 10, 10);
+
+        Point p = line.closestIntersectionToStartOfLine(rect);
+
+        assertNotNull(p);
+        assertEquals(10.0, p.getX(), 1e-9);
+        assertEquals(0.0, p.getY(), 1e-9);
+    }
+
+    @Test
+    void closestIntersection_DiagonalRectangleHit() {
+        Line line = new Line(0, 0, 15, 15);
+        Rectangle rect = new Rectangle(new Point(5, 5), 10, 10);
+
+        Point p = line.closestIntersectionToStartOfLine(rect);
+
+        // נקודת הפגיעה הראשונה = (5,5)
+        assertNotNull(p);
+        assertEquals(5.0, p.getX(), 1e-9);
+        assertEquals(5.0, p.getY(), 1e-9);
+    }
+
+
+
 }

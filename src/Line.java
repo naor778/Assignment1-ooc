@@ -1,6 +1,30 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Line {
     private Point start;
     private Point end;
+    // If this line does not intersect with the rectangle, return null.
+    // Otherwise, return the closest intersection point to the
+    // start of the line.
+    public Point closestIntersectionToStartOfLine(Rectangle rect) {
+        List<Point> ints = rect.intersectionPoints(this);
+
+        if (ints.isEmpty()) {
+            return null;
+        }
+
+        Point best = ints.get(0);
+
+        for (Point p : ints) {
+            if (this.start.distance(p) < this.start.distance(best)) {
+                best = p;
+            }
+        }
+
+        return best;
+    }
+
 
     // constructors
     public Line(Point start, Point end) {
@@ -49,20 +73,7 @@ public class Line {
         Double ml1 = this.slope();
         Double ml2 = other.slope();
 
-        if ((ml1 != null && ml2 != null) && ml1.equals(ml2)) {
-            double yThis = this.start.getY();
-            double yOther = other.start.getY();
-            // if thay dont have the same y than give false
-            if (yOther != yThis) {
-                return false;
-            }
-            // seeing if thay do have the same y so we need to see if any X is the same if thay are than give back true elesh False
-            return (inRange(this.start.getX(), this.end.getX(), other.start.getX()) ||
-                    (inRange(this.start.getX(), this.end.getX(), other.end.getX())) ||
-                    (inRange(other.start.getX(), other.end.getX(), this.start.getX())) ||
-                    (inRange(other.start.getX(), other.end.getX(), this.end.getX())));
 
-        }
         //if the 2 slopes are 0 we chacking if thay have the same x and y in some points
         if (ml1 == null && ml2 == null) {
             if (this.start().getX() != other.start().getX()) {
@@ -213,6 +224,7 @@ public class Line {
         }
         return false;
     }
+
 
 }
 
