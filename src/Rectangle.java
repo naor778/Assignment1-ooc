@@ -2,9 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rectangle {
-    Point upperLeft;
-    double width;
-    double height;
+  private   Point upperLeft;
+   private double width;
+   private double height;
 
 
     // Create a new rectangle with location and width/height.
