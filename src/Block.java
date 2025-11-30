@@ -19,37 +19,37 @@ public class Block implements Collidable ,Sprite {
 
     @Override
     public Velocity hit(Point collisionPoint, Velocity currentVelocity) {
+        double x = collisionPoint.getX();
+        double y = collisionPoint.getY();
+
+        double left   = this.rectangle.getUpperLeft().getX();
+        double right  = left + this.rectangle.getWidth();
+        double top    = this.rectangle.getUpperLeft().getY();
+        double bottom = top + this.rectangle.getHeight();
 
         double dx = currentVelocity.getDx();
         double dy = currentVelocity.getDy();
 
-        double x = collisionPoint.getX();
-        double y = collisionPoint.getY();
+        // האם פגענו בצד שמאל או ימין
+        boolean hitLeftSide  = Math.abs(x - left) < 0.0001;
+        boolean hitRightSide = Math.abs(x - right) < 0.0001;
 
-        double left = rectangle.getUpperLeft().getX();
-        double right = left + rectangle.getWidth();
-        double top = rectangle.getUpperLeft().getY();
-        double bottom = top + rectangle.getHeight();
+        // האם פגענו בחלק עליון או תחתון
+        boolean hitTop    = Math.abs(y - top) < 0.0001;
+        boolean hitBottom = Math.abs(y - bottom) < 0.0001;
 
-        double eps = 3.0;
-
-        boolean hitLeft = Math.abs(x - left) <= eps;
-        boolean hitRight = Math.abs(x - right) <= eps;
-        boolean hitTop = Math.abs(y - top) <= eps;
-        boolean hitBottom = Math.abs(y - bottom) <= eps;
-
-        // פגיעה בקירות עומדיים: להפוך dx
-        if (hitLeft || hitRight) {
-            dx = -dx;
+        // בולטרפיקציה של האינפוט
+        if (hitLeftSide || hitRightSide) {
+            dx = -dx;  // היפוך כיוון אופקי
         }
 
-        // פגיעה בקירות אופקיים: להפוך dy
         if (hitTop || hitBottom) {
-            dy = -dy;
+            dy = -dy;  // היפוך כיוון אנכי
         }
 
         return new Velocity(dx, dy);
     }
+
 
     public Color getColor() {
         return this.color;

@@ -39,96 +39,38 @@ public class Ball implements Sprite{
         return this.velocity;
     }
     public void moveOneStep() {
-        // אם אין מהירות – אין תנועה
-        if (this.velocity == null) {
-            return;
-        }
-
-        // אם אין סביבה – תנועה חופשית
         if (this.gameEnvironment == null) {
-            this.center = this.velocity.applyToPoint(this.center);
+            this.center = this.getVelocity().applyToPoint(this.center);
             return;
         }
 
-        // 1) המסלול שהכדור היה עושה בלי מכשולים
-        Point start = this.center;
-        Point end = this.velocity.applyToPoint(this.center);
-        Line trajectory = new Line(start, end);
+        // 1. מסלול מהנקודה הנוכחית לנקודה הבאה
+        Point current = this.center;
+        Point next = this.velocity.applyToPoint(this.center);
+        Line trajectory = new Line(current, next);
 
-        // 2) שואלים את הסביבה על ההתנגשות הקרובה
+        // 2. בדיקה האם יש התנגשות בדרך
         CollisionInfo info = this.gameEnvironment.getClosestCollision(trajectory);
 
-        // אין פגיעה → זזים עד סוף המסלול
         if (info == null) {
-            this.center = end;
-            return;
-        }
-
-        // יש פגיעה
-        Point collisionPoint = info.collisionPoint();
-        Collidable collidable = info.collisionObject();
-
-        double dx = this.velocity.getDx();
-        double dy = this.velocity.getDy();
-        double len = Math.sqrt(dx * dx + dy * dy);
-        if (len == 0) {
-            return; // ליתר ביטחון
-        }
-
-        double ux = dx / len;
-        double uy = dy / len;
-
-        // נביא את המלבֵן של האובייקט שפגענו בו
-        Rectangle rect = collidable.getCollisionRectangle();
-        double left   = rect.getUpperLeft().getX();
-        double top    = rect.getUpperLeft().getY();
-        double right  = left + rect.getWidth();
-        double bottom = top + rect.getHeight();
-
-        double x = collisionPoint.getX();
-        double y = collisionPoint.getY();
-
-        // eps לזיהוי באיזה צד פגענו (לא קטן מדי)
-        double eps = 2.0;
-
-        boolean hitLeft   = Math.abs(x - left)   <= eps;
-        boolean hitRight  = Math.abs(x - right)  <= eps;
-        boolean hitTop    = Math.abs(y - top)    <= eps;
-        boolean hitBottom = Math.abs(y - bottom) <= eps;
-
-        double cx;
-        double cy;
-        double margin = 0.5; // מרווח קטן מעבר לרדיוס
-
-        if (hitLeft) {
-            // פגענו בצד שמאל של הבלוק → נשים את המרכז משמאל לבלוק
-            cx = left - this.r - margin;
-            cy = y;
-        } else if (hitRight) {
-            // פגיעה בצד ימין
-            cx = right + this.r + margin;
-            cy = y;
-        } else if (hitTop) {
-            // פגיעה בצד העליון
-            cx = x;
-            cy = top - this.r - margin;
-        } else if (hitBottom) {
-            // פגיעה בצד התחתון
-            cx = x;
-            cy = bottom + this.r + margin;
+            // אין התנגשות – פשוט זזים
+            this.center = next;
         } else {
-            // לא זוהה צד ברור (מקרה קצה / פינה) → נעשה backOff רגיל לאורך המסלול
-            double backOff = this.r + 1;
-            cx = x - ux * backOff;
-            cy = y - uy * backOff;
+            // יש עצם מתנגש
+            Point collisionPoint = info.collisionPoint();
+            Collidable object = info.collisionObject();
+
+            // להזיז את הכדור טיפה לפני נקודת ההתנגשות
+            double epsilon = 0.001;
+            double newX = collisionPoint.getX() - this.velocity.getDx() * epsilon;
+            double newY = collisionPoint.getY() - this.velocity.getDy() * epsilon;
+            this.center = new Point(newX, newY);
+
+            // לחשב מהירות חדשה דרך hit של האובייקט
+            this.velocity = object.hit(collisionPoint, this.velocity);
         }
-
-        // מעדכנים את מרכז הכדור למיקום החדש, מחוץ לבלוק
-        this.center = new Point(cx, cy);
-
-        // ולבסוף – מעדכנים מהירות לפי מה שהאובייקט מחזיר
-        this.velocity = collidable.hit(collisionPoint, this.velocity);
     }
+
     @Override
     public void timePassed() {
         this.moveOneStep();

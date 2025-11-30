@@ -9,6 +9,7 @@ public class GameEnvironment {
         this.collidables = new ArrayList<>();
     }
 
+
     // add the given collidable to the environment.
     public void addCollidable(Collidable c) {
         this.collidables.add(c);
@@ -46,5 +47,6 @@ public class GameEnvironment {
 
         return new CollisionInfo(closestPoint, closestObject);
     }
+
 }
 

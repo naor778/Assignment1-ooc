@@ -13,7 +13,7 @@ public class SpriteCollection {
         this.sprites.add(s);
     }
 
-    // אם תרצה בעתיד להסיר
+
     public void removeSprite(Sprite s) {
         this.sprites.remove(s);
     }
