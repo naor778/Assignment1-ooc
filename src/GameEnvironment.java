@@ -9,6 +9,9 @@ public class GameEnvironment {
         this.collidables = new ArrayList<>();
     }
 
+    public List<Collidable> getCollidables() {
+        return this.collidables;
+    }
 
     // add the given collidable to the environment.
     public void addCollidable(Collidable c) {

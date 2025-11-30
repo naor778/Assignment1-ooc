@@ -9,6 +9,7 @@ public class Game {
     private GameEnvironment environment;
     private GUI gui;
 
+
     private int width = 800;
     private int height = 600;
 
@@ -18,6 +19,7 @@ public class Game {
         this.gui = new GUI("My Game", width, height);
     }
 
+
     public void addSprite(Sprite s) {
         this.sprites.addSprite(s);
     }
@@ -25,6 +27,14 @@ public class Game {
     public void addCollidable(Collidable c) {
         this.environment.addCollidable(c);
     }
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
 
     // פונקציה שעושה את כל בניית העולם – בלוקים, גבולות, כדור וכו'
     public void initialize() {

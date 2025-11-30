@@ -30,25 +30,26 @@ public class Block implements Collidable ,Sprite {
         double dx = currentVelocity.getDx();
         double dy = currentVelocity.getDy();
 
+        double eps = 0.0001;
+
         // האם פגענו בצד שמאל או ימין
-        boolean hitLeftSide  = Math.abs(x - left) < 0.0001;
-        boolean hitRightSide = Math.abs(x - right) < 0.0001;
+        boolean hitLeftSide  = Math.abs(x - left)  <= eps;
+        boolean hitRightSide = Math.abs(x - right) <= eps;
 
         // האם פגענו בחלק עליון או תחתון
-        boolean hitTop    = Math.abs(y - top) < 0.0001;
-        boolean hitBottom = Math.abs(y - bottom) < 0.0001;
+        boolean hitTop    = Math.abs(y - top)    <= eps;
+        boolean hitBottom = Math.abs(y - bottom) <= eps;
 
-        // בולטרפיקציה של האינפוט
         if (hitLeftSide || hitRightSide) {
-            dx = -dx;  // היפוך כיוון אופקי
+            dx = -dx;
         }
-
         if (hitTop || hitBottom) {
-            dy = -dy;  // היפוך כיוון אנכי
+            dy = -dy;
         }
 
         return new Velocity(dx, dy);
     }
+
 
 
     public Color getColor() {
